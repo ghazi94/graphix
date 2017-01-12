@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="js/library/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript" src="js/library/processing.min.js"></script>
+        <script type="text/javascript" src="js/library/underscore.js"></script>
+        <script type="text/javascript" src="js/graphdump.js"></script>
+        <link rel="stylesheet" href="css/GraphEditor.css" type="text/css">
+        <script type="text/javascript"></script>
+    </head>
+    <body>
+        <span>
+            <span class="headingSpan bold">ZEFO</span>
+            <span class="headingSpan"><label for="graphName">Graph Name: </label><input type="text" id="graphName" placeholder="Graph Name" value="Pricing_Tool_Ghazi"></span>
+            <span class="headingSpan"><label for="graphVersion">Graph Version: </label><input type="text" id="graphVersion" placeholder="Graph Version" value="1"></span>
+            <span class="headingSpan"><label for="graphUrl">Graph Url: </label><input type="text" id="graphUrl" placeholder="Graph Url" value="http://localhost:9090/graph/"></span>
+            <span class="headingSpan"><label for="messages">Status Messages: </label><input class="green-background" type="text" id="messages" placeholder="messages" value="messages" disabled></span>
+        </span>
+        <br><br>
+        <div class="graph">
+            <div class="graph-properties">
+                <div class="small-font">
+                    Non-Destructive modes. Can be combined with any other mode.
+                    <br>
+                    -------------------------------------------------
+                </div>
+                <div>
+                    <div class="toggle-box">
+                        <label class="edit-mode">
+                            <input type="checkbox" id="highlightNextPathToggle">
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-box-text">
+                        <a>Highlight Next Path Toggle</a>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <div class="toggle-box">
+                        <label class="edit-mode">
+                            <input type="checkbox" id="editNodeToggle">
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-box-text">
+                        <a>Edit Node Mode Toggle</a>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="small-font">
+                    Mutually exclusive modes.
+                    <br>
+                    -------------------------
+                </div>
+                <div>
+                    <div class="toggle-box">
+                        <label class="edit-mode">
+                            <input type="checkbox" id="addChildToggle">
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-box-text">
+                        <a>Add Child Mode Toggle</a>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <div class="toggle-box">
+                        <label class="edit-mode">
+                            <input type="checkbox" id="addLinkToggle">
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-box-text">
+                        <a>Add Link Toggle</a>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <div class="toggle-box">
+                        <label class="edit-mode">
+                            <input type="checkbox" id="removeLinkToggle">
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-box-text">
+                        <a>Remove Link Toggle</a>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div>
+                    <div class="toggle-box">
+                        <label class="edit-mode">
+                            <input type="checkbox" id="removeNodeToggle" disabled>
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
+                    <div class="toggle-box-text">
+                        <a>Remove Node Toggle</a>
+                    </div>
+                </div>
+
+                <div class="form">
+                   <div class="row medium-font">
+                        <div id="nodeMetaData">
+                            
+                        </div>
+                        <button id="addKeyValuePair" disabled>Add Attributes</button>
+                        <button id="updateNodeButton">Update Node</button>
+                    </div>
+                    <!--div class="row">
+                        <button id="addChildNodeButton">Add Child</button>
+                        <button id="removeNode">Remove Node</button>
+                    </div-->
+                    <div class="row">
+                        <button id="fetchGraphButton">Fetch Graph</button>
+                        <button id="saveGraphButton">Save Graph</button>
+                    </div>
+                    <div class="row">
+                        <button id="saveCanvasImage">Snapshot</button>
+                        <div id="capturedCanvasImage">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-canvas">
+                <canvas id="holderCanvas"></canvas>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="js/ZoomPanCanvas.js"></script>
+    <script type="text/javascript" src="js/GraphEditor.js"></script>
+
+    <!-- Some Underscore Templates -->
+    <script type="text/template" id="nodeAttributesTemplate">
+        <div class="nodeAttributes small-font">
+            <span><label>At Node (<%=toNodeId%>): </label><input type="text" id="toNode" value="<%=toNode%>">
+            <label>Of Genus: </label><input type="text" id="toNodeGenus" value="<%=toNodeGenus%>"></span>
+            <% if (fromNodeId != null) { %>
+                <br>
+                <label>Having Below Relationships With Parent Node: </label><input type="text" id="fromNode" value="<%=fromNode%>">
+                <% _.each(edgeAttributes, function(edgeAttribute){ %>
+                    <br>
+                    <% _.each(edgeAttribute, function(value, key, list){ %>
+                        <label><%=key%>: </label><input type="text" name="edge-attribute" id="<%=key%>" value="<% if (value != null) {%><%=value%><% } %>">
+                        <br>
+                    <% }); %>
+                    ---------------------------------------------------------
+                <% }); %>
+            <% } %>
+        </div>
+    </script>
+</html>

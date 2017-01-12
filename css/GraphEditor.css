@@ -1,0 +1,180 @@
+body { 
+	background: black; 
+	margin:1em; 
+	text-align:center;
+	overflow-y: auto;
+	font-family: verdana;
+  color: #dffde6;
+}
+
+/* Heading items */
+.headingSpan {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+/* Main graph container CSS */
+.graph{
+    display: flex;
+}
+.graph-properties{
+    width: 400px;
+}
+.graph-canvas{
+    flex-grow: 1;
+}
+
+#holderCanvas { 
+	display:block; 
+	margin:1em auto; 
+	background:#DBDBDB; 
+	border:1px solid #ccc 
+}
+
+.small-font {
+  font-size: 12px;
+}
+
+/* Toggle Button and Text Div Wrappers CSS */
+.toggle-box {
+	float: right;
+}
+.toggle-box-text {
+	float: left;
+}
+
+/* Toggle Button CSS */
+
+/* The switch - the box around the slider */
+.edit-mode {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+
+/* Hide default HTML checkbox */
+.edit-mode input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 17px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Graph/Node property editor boxes */
+.graph-properties .form {
+	margin-top: 50px;
+}
+.graph-properties .form .row {
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: #219485;
+	padding-bottom: 10px;
+	margin-top: 50px;
+}
+
+
+.graph-properties .form .row input {
+  width: 18%;
+  font-family: sans-serif;
+  appearance: none;
+  box-shadow: none;
+  border-radius: none;
+  background-color: black;
+  color: white;
+/**
+  margin-right: 5px;
+  display: inline-block;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  font-size: 16px;
+**/
+}
+
+#capturedCanvasImage img {
+	width: 400px;
+	height: 233px;
+	margin-top: 10px;
+}
+
+/* Buttons */
+.form button {
+  height: 34px;
+  width: 90px;
+  color: #fff;
+  background-color: #6496c8;
+  text-shadow: -1px 1px #417cb8;
+  border: none;
+}
+
+.form button:hover,
+.form button.hover {
+  background-color: #346392;
+  text-shadow: -1px 1px #27496d;
+}
+
+.form button:active,
+.form button.active {
+  background-color: #27496d;
+  text-shadow: -1px 1px #193047;
+}
+
+/* Generic */
+.red-background {
+  background-color: red;
+}
+.green-background {
+  background-color: green;
+}
+
+#messages {
+  width: 32%;
+  color: white;
+}
