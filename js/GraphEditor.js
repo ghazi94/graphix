@@ -10,6 +10,7 @@ var messageBox = $('#messages');
 var holderCanvas = document.getElementById("holderCanvas");
 
 // Toggle Switches
+var stepWiseExpansionSwitch = $('#stepWiseExpansionToggle').length ? $('#stepWiseExpansionToggle')[0] : null;
 var addChildToggleSwitch = $('#addChildToggle').length ? $('#addChildToggle')[0] : null;
 var addLinkToggleSwitch = $('#addLinkToggle').length ? $('#addLinkToggle')[0] : null;
 var removeLinkToggleSwitch = $('#removeLinkToggle').length ? $('#removeLinkToggle')[0] : null;
@@ -25,10 +26,13 @@ function isEditMode(mode) {
         removeLinkToggleSwitch.checked || 
         highlightNextPathToggleSwitch.checked ||
         removeNodeToggleSwitch.checked || 
-        editNodeToggleSwitch.checked)) {
+        editNodeToggleSwitch.checked ||
+        stepWiseExpansionSwitch.checked)) {
         return true;
     } // Below states are ordered by their least destructive nature 
     else if (mode == "highlightPath" && highlightNextPathToggleSwitch.checked) {
+        return true;
+    } else if (mode == "stepWiseExpansion" && stepWiseExpansionSwitch.checked) { 
         return true;
     } else if (mode == "editNode" && editNodeToggleSwitch.checked) {
         return true;
@@ -401,6 +405,24 @@ function generateDrawing (processing) {
         }
     }
 
+    function minimizeEntireGraph() {
+        var nodesList = graphInfo.nodes;
+        for (var i=0; i<nodesList.length; i++) {
+            if (!(nodesList[i].name.toLowerCase() == "root" || nodesList[i].genus.toLowerCase() == "root")) {
+                nodesList[i]['minimized'] = true;
+            }
+        }
+        nodeTraversalAndPlacement(null, null);
+    }
+
+    function maximizeEntireGraph() {
+        var nodesList = graphInfo.nodes;
+        for (var i=0; i<nodesList.length; i++) {
+                nodesList[i]['minimized'] = false;
+        }
+        nodeTraversalAndPlacement(null, null);
+    }
+
     // Drawing functions
 
     // Draw circle
@@ -491,6 +513,14 @@ function generateDrawing (processing) {
         function(ev) {
             toggleSwitchChangePreparation();
     });
+    $(stepWiseExpansionSwitch).change(
+        function(ev) {
+            if (ev.target.checked) {
+                minimizeEntireGraph();
+            } else {
+                maximizeEntireGraph();
+            }
+    });
 
     // Button Update Listeners
     // Update the node/edge atrributes from the given form
@@ -524,6 +554,8 @@ function generateDrawing (processing) {
                     }
                 });
             }
+        } else {
+            alert('Please switch edit mode toggle to ON');
         }
     });
 
@@ -570,9 +602,11 @@ function generateDrawing (processing) {
 
 // Graph indexing, traversal, and state management code
 
-function nodeTraversalAndPlacement(severity) {
+function nodeTraversalAndPlacement(severity, dontReset) {
     // Don't clear user generated data but clear all traversal related data
-    resetStateVariables(severity);
+    if (!dontReset) {
+        resetStateVariables(severity);
+    }
     var nodesList = graphInfo.nodes;
     var edgesList = graphInfo.edges;
 
@@ -640,34 +674,36 @@ function nodeTraversalAndPlacement(severity) {
 
 // The following recursive function traverses the map and arranges node according to their level
 function traverse(parentNodeId, nodeId, depth) {
-    // Check if this path has been traversed before or not
-    var traversalMapIndexKey = parentNodeId + '->' + nodeId;
-    if (!(traversalMapIndex[traversalMapIndexKey] && traversalMapIndex[traversalMapIndexKey].traversalCount)) {
-        // Add this traversal to the traversalMapIndex
-        traversalMapIndex[traversalMapIndexKey] = {};
-        traversalMapIndex[traversalMapIndexKey]['traversalCount'] = 1;
+    if (!nodesIndexedById[nodeId].minimized) {
+        // Check if this path has been traversed before or not
+        var traversalMapIndexKey = parentNodeId + '->' + nodeId;
+        if (!(traversalMapIndex[traversalMapIndexKey] && traversalMapIndex[traversalMapIndexKey].traversalCount)) {
+            // Add this traversal to the traversalMapIndex
+            traversalMapIndex[traversalMapIndexKey] = {};
+            traversalMapIndex[traversalMapIndexKey]['traversalCount'] = 1;
 
-        if (!traversalLevels[depth]) {
-            traversalLevels[depth] = [];
-        }
-        // First check if that nodeId is NOT already present at that level (through some other path)
-        if (traversalLevels[depth].indexOf(nodeId) == -1) {
-            traversalLevels[depth].push(nodeId);
-        }
-        // Now push child nodes in the recursive call and increase depth for the children to 1
-        var newDepth = depth + 1;
-        var childNodeIds = fromNodePathToNodes[nodeId];
-        // Not every node may have a path from it
-        if (Array.isArray(childNodeIds)) {
-            for (var i=0; i<childNodeIds.length; i++) {
-                traverse(nodeId, childNodeIds[i], newDepth);
+            if (!traversalLevels[depth]) {
+                traversalLevels[depth] = [];
             }
+            // First check if that nodeId is NOT already present at that level (through some other path)
+            if (traversalLevels[depth].indexOf(nodeId) == -1) {
+                traversalLevels[depth].push(nodeId);
+            }
+            // Now push child nodes in the recursive call and increase depth for the children to 1
+            var newDepth = depth + 1;
+            var childNodeIds = fromNodePathToNodes[nodeId];
+            // Not every node may have a path from it
+            if (Array.isArray(childNodeIds)) {
+                for (var i=0; i<childNodeIds.length; i++) {
+                    traverse(nodeId, childNodeIds[i], newDepth);
+                }
+            }
+        } else {
+            // Log cyclic cycles detected!
+            console.log('The path from parent: ' + nodesIndexedById[parentNodeId].name + 
+                ' to child: ' + nodesIndexedById[nodeId].name + ' was found being traversed for the second time!');
+            traversalMapIndex[traversalMapIndexKey].traversalCount++;
         }
-    } else {
-        // Log cyclic cycles detected!
-        console.log('The path from parent: ' + nodesIndexedById[parentNodeId].name + 
-            ' to child: ' + nodesIndexedById[nodeId].name + ' was found being traversed for the second time!');
-        traversalMapIndex[traversalMapIndexKey].traversalCount++;
     }
 }
 
